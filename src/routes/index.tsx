@@ -1,118 +1,140 @@
 import { createFileRoute } from '@tanstack/react-router'
-import {
-  Zap,
-  Server,
-  Route as RouteIcon,
-  Shield,
-  Waves,
-  Sparkles,
-} from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Activity, Code2, HardDrive } from 'lucide-react'
+import { IdentityTile } from '../components/IdentityTile'
+import { ConnectionTile } from '../components/ConnectionTile'
+import { KernelLogTerminal } from '../components/KernelLogTerminal'
+import { useShadowNetwork } from '../utils/useShadowNetwork'
 
-export const Route = createFileRoute('/')({ component: App })
+export const Route = createFileRoute('/')({
+  component: ShadowDashboard,
+})
 
-function App() {
-  const features = [
-    {
-      icon: <Zap className="w-12 h-12 text-cyan-400" />,
-      title: 'Powerful Server Functions',
-      description:
-        'Write server-side code that seamlessly integrates with your client components. Type-safe, secure, and simple.',
-    },
-    {
-      icon: <Server className="w-12 h-12 text-cyan-400" />,
-      title: 'Flexible Server Side Rendering',
-      description:
-        'Full-document SSR, streaming, and progressive enhancement out of the box. Control exactly what renders where.',
-    },
-    {
-      icon: <RouteIcon className="w-12 h-12 text-cyan-400" />,
-      title: 'API Routes',
-      description:
-        'Build type-safe API endpoints alongside your application. No separate backend needed.',
-    },
-    {
-      icon: <Shield className="w-12 h-12 text-cyan-400" />,
-      title: 'Strongly Typed Everything',
-      description:
-        'End-to-end type safety from server to client. Catch errors before they reach production.',
-    },
-    {
-      icon: <Waves className="w-12 h-12 text-cyan-400" />,
-      title: 'Full Streaming Support',
-      description:
-        'Stream data from server to client progressively. Perfect for AI applications and real-time updates.',
-    },
-    {
-      icon: <Sparkles className="w-12 h-12 text-cyan-400" />,
-      title: 'Next Generation Ready',
-      description:
-        'Built from the ground up for modern web applications. Deploy anywhere JavaScript runs.',
-    },
-  ]
+function ShadowDashboard() {
+  const { nodeId, logs, connect, peer } = useShadowNetwork()
+
+  const isKernelReady = Boolean(peer && nodeId)
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
-      <section className="relative py-20 px-6 text-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10"></div>
-        <div className="relative max-w-5xl mx-auto">
-          <div className="flex items-center justify-center gap-6 mb-6">
-            <img
-              src="/tanstack-circle-logo.png"
-              alt="TanStack Logo"
-              className="w-24 h-24 md:w-32 md:h-32"
-            />
-            <h1 className="text-6xl md:text-7xl font-black text-white [letter-spacing:-0.08em]">
-              <span className="text-gray-300">TANSTACK</span>{' '}
-              <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                START
-              </span>
-            </h1>
-          </div>
-          <p className="text-2xl md:text-3xl text-gray-300 mb-4 font-light">
-            The framework for next generation AI applications
+    <div className="h-full w-full flex flex-col gap-4 md:gap-6">
+      <header className="flex items-center justify-between gap-4">
+        <div>
+          <p className="text-[10px] uppercase tracking-[0.28em] text-indigo-300/80">
+            Shadow OS
           </p>
-          <p className="text-lg text-gray-400 max-w-3xl mx-auto mb-8">
-            Full-stack framework powered by TanStack Router for React and Solid.
-            Build modern applications with server functions, streaming, and type
-            safety.
-          </p>
-          <div className="flex flex-col items-center gap-4">
-            <a
-              href="https://tanstack.com/start"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-3 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-lg transition-colors shadow-lg shadow-cyan-500/50"
-            >
-              Documentation
-            </a>
-            <p className="text-gray-400 text-sm mt-2">
-              Begin your TanStack Start journey by editing{' '}
-              <code className="px-2 py-1 bg-slate-700 rounded text-cyan-400">
-                /src/routes/index.tsx
-              </code>
-            </p>
-          </div>
+          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">
+            Control Deck
+          </h1>
         </div>
-      </section>
+        <div className="flex items-center gap-2 text-xs font-mono text-gray-400">
+          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-400/30 px-2 py-1">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="uppercase tracking-[0.18em]">
+              {isKernelReady ? 'Kernel Online' : 'Booting Kernel'}
+            </span>
+          </span>
+        </div>
+      </header>
 
-      <section className="py-16 px-6 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10"
-            >
-              <div className="mb-4">{feature.icon}</div>
-              <h3 className="text-xl font-semibold text-white mb-3">
-                {feature.title}
-              </h3>
-              <p className="text-gray-400 leading-relaxed">
-                {feature.description}
+      <motion.main
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: 'easeOut' }}
+        className="grid grid-cols-1 lg:grid-cols-4 auto-rows-[minmax(110px,_auto)] gap-4 md:gap-5 lg:gap-6"
+      >
+        {/* Left bento column: identity + connection */}
+        <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-4 auto-rows-[minmax(110px,_auto)] gap-4 md:gap-5">
+          <IdentityTile nodeId={nodeId} />
+
+          <ConnectionTile
+            isKernelReady={isKernelReady}
+            nodeId={nodeId}
+            onConnect={connect}
+          />
+
+          <motion.section
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: 'easeOut', delay: 0.12 }}
+            className="glass-card col-span-1 md:col-span-2 p-4 flex flex-col justify-between"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-lg bg-violet-500/70 flex items-center justify-center shadow-[0_0_18px_rgba(139,92,246,0.7)]">
+                  <Code2 size={16} className="text-white" />
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.22em] text-violet-200/80">
+                    Forge
+                  </p>
+                  <h2 className="text-sm font-semibold tracking-tight">
+                    Real-time IDE
+                  </h2>
+                </div>
+              </div>
+              <span className="text-[10px] text-gray-400 font-mono">
+                /forge
+              </span>
+            </div>
+            <p className="text-[11px] text-gray-300 leading-relaxed">
+              Enter the Forge to co-edit code with connected peers using
+              Monaco + Yjs. Remote cursors, live presence, and conflict-free
+              merging keep your swarm in sync.
+            </p>
+          </motion.section>
+
+          <motion.section
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: 'easeOut', delay: 0.16 }}
+            className="glass-card col-span-1 md:col-span-2 p-4 flex flex-col justify-between"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-lg bg-cyan-500/70 flex items-center justify-center shadow-[0_0_18px_rgba(34,211,238,0.7)]">
+                  <HardDrive size={16} className="text-white" />
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.22em] text-cyan-200/80">
+                    Vault
+                  </p>
+                  <h2 className="text-sm font-semibold tracking-tight">
+                    P2P file grid
+                  </h2>
+                </div>
+              </div>
+              <span className="text-[10px] text-gray-400 font-mono">
+                /vault
+              </span>
+            </div>
+            <p className="text-[11px] text-gray-300 leading-relaxed">
+              Drag and drop assets into the Vault to send them across your
+              peer mesh. Files are chunked into 64KB packets and reassembled
+              on arrival with inline previews.
+            </p>
+          </motion.section>
+        </div>
+
+        {/* Right column: kernel terminal */}
+        <div className="lg:col-span-1 flex flex-col gap-4">
+          <div className="glass-card p-4 flex items-center gap-3">
+            <div className="h-8 w-8 rounded-lg bg-emerald-500/70 flex items-center justify-center shadow-[0_0_18px_rgba(16,185,129,0.7)]">
+              <Activity size={16} className="text-black" />
+            </div>
+            <div className="flex-1">
+              <p className="text-[10px] uppercase tracking-[0.22em] text-emerald-200/80">
+                Telemetry
+              </p>
+              <p className="text-xs text-gray-200 font-mono">
+                PeerJS · Clerk · Yjs · Vault
               </p>
             </div>
-          ))}
+          </div>
+
+          <KernelLogTerminal logs={logs} />
         </div>
-      </section>
+      </motion.main>
     </div>
   )
 }
+
