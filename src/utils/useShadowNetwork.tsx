@@ -27,6 +27,13 @@ export interface ReceivedFile {
   objectUrl: string
 }
 
+export interface ChatMessage {
+  id: string
+  fromPeerId: string
+  text: string
+  createdAt: number
+}
+
 type FileChunkMessage = {
   type: 'file-chunk'
   fileId: string
@@ -48,7 +55,18 @@ type SimpleTextMessage = {
   text: string
 }
 
-type PeerMessage = FileChunkMessage | FileCompleteMessage | SimpleTextMessage
+type ChatPacketMessage = {
+  type: 'chat'
+  text: string
+  fromPeerId: string
+  createdAt: number
+}
+
+type PeerMessage =
+  | FileChunkMessage
+  | FileCompleteMessage
+  | SimpleTextMessage
+  | ChatPacketMessage
 
 interface IncomingFileBuffer {
   fromPeerId: string
@@ -78,6 +96,7 @@ export const useShadowNetwork = () => {
     Map<string, DataConnection>
   >(new Map())
   const [receivedFiles, setReceivedFiles] = useState<ReceivedFile[]>([])
+  const [messages, setMessages] = useState<ChatMessage[]>([])
 
   const peerRef = useRef<Peer | null>(null)
   const mediaConnectionsRef = useRef<Map<string, MediaConnection>>(
@@ -162,6 +181,18 @@ export const useShadowNetwork = () => {
 
       if (data.type === 'text') {
         addLog('info', `Message from ${senderId}: ${data.text}`)
+        return
+      }
+
+      if (data.type === 'chat') {
+        const message: ChatMessage = {
+          id: `${senderId}-${data.createdAt}-${generateId()}`,
+          fromPeerId: data.fromPeerId,
+          text: data.text,
+          createdAt: data.createdAt,
+        }
+        setMessages((prev) => [...prev, message])
+        addLog('info', `Chat from ${senderId}: ${data.text}`)
       }
     },
     [addLog, finalizeIncomingFile],
@@ -398,15 +429,57 @@ export const useShadowNetwork = () => {
     [addLog],
   )
 
+  const sendChat = useCallback(
+    (text: string) => {
+      const currentPeer = peerRef.current
+      const trimmed = text.trim()
+
+      if (!currentPeer) {
+        addLog('error', 'Kernel not ready. Cannot send chat.')
+        return
+      }
+
+      if (!trimmed) {
+        return
+      }
+
+      const createdAt = Date.now()
+      const localMessage: ChatMessage = {
+        id: `${currentPeer.id}-${createdAt}-${generateId()}`,
+        fromPeerId: currentPeer.id,
+        text: trimmed,
+        createdAt,
+      }
+
+      setMessages((prev) => [...prev, localMessage])
+
+      const packet: ChatPacketMessage = {
+        type: 'chat',
+        text: trimmed,
+        fromPeerId: currentPeer.id,
+        createdAt,
+      }
+
+      connections.forEach((conn) => {
+        conn.send(packet)
+      })
+
+      addLog('info', `Chat broadcast: ${trimmed}`)
+    },
+    [addLog, connections],
+  )
+
   return {
     peer,
     nodeId,
     logs,
     connections,
     receivedFiles,
+    messages,
     connect,
     sendFile,
     sendStream,
+    sendChat,
   }
 }
 

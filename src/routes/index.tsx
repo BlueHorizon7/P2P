@@ -4,6 +4,7 @@ import { Activity, Code2, HardDrive } from 'lucide-react'
 import { IdentityTile } from '../components/IdentityTile'
 import { ConnectionTile } from '../components/ConnectionTile'
 import { KernelLogTerminal } from '../components/KernelLogTerminal'
+import { ChatDock } from '../components/ChatDock'
 import { useShadowNetwork } from '../utils/useShadowNetwork'
 
 export const Route = createFileRoute('/')({
@@ -11,7 +12,7 @@ export const Route = createFileRoute('/')({
 })
 
 function ShadowDashboard() {
-  const { nodeId, logs, connect, peer } = useShadowNetwork()
+  const { nodeId, logs, messages, connect, peer, sendChat } = useShadowNetwork()
 
   const isKernelReady = Boolean(peer && nodeId)
 
@@ -126,7 +127,7 @@ function ShadowDashboard() {
                 Telemetry
               </p>
               <p className="text-xs text-gray-200 font-mono">
-                PeerJS · Clerk · Yjs · Vault
+                PeerJS · Yjs · Vault
               </p>
             </div>
           </div>
@@ -134,6 +135,8 @@ function ShadowDashboard() {
           <KernelLogTerminal logs={logs} />
         </div>
       </motion.main>
+
+      <ChatDock nodeId={nodeId} messages={messages} onSend={sendChat} />
     </div>
   )
 }
