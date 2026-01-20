@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VaultRouteImport } from './routes/vault'
 import { Route as ForgeRouteImport } from './routes/forge'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DemoTrpcTodoRouteImport } from './routes/demo/trpc-todo'
@@ -26,6 +27,11 @@ import { Route as DemoStartSsrSpaModeRouteImport } from './routes/demo/start.ssr
 import { Route as DemoStartSsrFullSsrRouteImport } from './routes/demo/start.ssr.full-ssr'
 import { Route as DemoStartSsrDataOnlyRouteImport } from './routes/demo/start.ssr.data-only'
 
+const VaultRoute = VaultRouteImport.update({
+  id: '/vault',
+  path: '/vault',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ForgeRoute = ForgeRouteImport.update({
   id: '/forge',
   path: '/forge',
@@ -110,6 +116,7 @@ const DemoStartSsrDataOnlyRoute = DemoStartSsrDataOnlyRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/forge': typeof ForgeRoute
+  '/vault': typeof VaultRoute
   '/demo/clerk': typeof DemoClerkRoute
   '/demo/neon': typeof DemoNeonRoute
   '/demo/prisma': typeof DemoPrismaRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/forge': typeof ForgeRoute
+  '/vault': typeof VaultRoute
   '/demo/clerk': typeof DemoClerkRoute
   '/demo/neon': typeof DemoNeonRoute
   '/demo/prisma': typeof DemoPrismaRoute
@@ -147,6 +155,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/forge': typeof ForgeRoute
+  '/vault': typeof VaultRoute
   '/demo/clerk': typeof DemoClerkRoute
   '/demo/neon': typeof DemoNeonRoute
   '/demo/prisma': typeof DemoPrismaRoute
@@ -167,6 +176,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/forge'
+    | '/vault'
     | '/demo/clerk'
     | '/demo/neon'
     | '/demo/prisma'
@@ -185,6 +195,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/forge'
+    | '/vault'
     | '/demo/clerk'
     | '/demo/neon'
     | '/demo/prisma'
@@ -203,6 +214,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/forge'
+    | '/vault'
     | '/demo/clerk'
     | '/demo/neon'
     | '/demo/prisma'
@@ -222,6 +234,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ForgeRoute: typeof ForgeRoute
+  VaultRoute: typeof VaultRoute
   DemoClerkRoute: typeof DemoClerkRoute
   DemoNeonRoute: typeof DemoNeonRoute
   DemoPrismaRoute: typeof DemoPrismaRoute
@@ -240,6 +253,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/vault': {
+      id: '/vault'
+      path: '/vault'
+      fullPath: '/vault'
+      preLoaderRoute: typeof VaultRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/forge': {
       id: '/forge'
       path: '/forge'
@@ -358,6 +378,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ForgeRoute: ForgeRoute,
+  VaultRoute: VaultRoute,
   DemoClerkRoute: DemoClerkRoute,
   DemoNeonRoute: DemoNeonRoute,
   DemoPrismaRoute: DemoPrismaRoute,

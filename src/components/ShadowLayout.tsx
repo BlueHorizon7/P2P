@@ -10,7 +10,7 @@ export const ShadowLayout = ({
     <div className="flex h-screen w-full bg-transparent overflow-hidden font-sans text-white select-none">
       <AuroraBackground />
       <Sidebar />
-      <main className="flex-1 relative p-6 overflow-hidden flex flex-col">
+      <main className="flex-1 relative pt-12 md:pt-0 p-4 sm:p-6 overflow-y-auto flex flex-col">
         {children}
       </main>
     </div>
